@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "molddir"
-version = "0.1.1"
+version = "0.1.2"
 description = "molddir simplifies merging directory files into a single file. It's especially useful for sending entire codebases to Large Language Models (LLMs) by encoding the codebase into one string"
 authors = ["RahulDas-dev <r.das699@gmail.com>"]
 maintainers = ["RahulDas-dev <r.das699@gmail.com>"]
