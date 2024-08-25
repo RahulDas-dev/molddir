@@ -34,8 +34,12 @@ jobs:
       if: github.ref == 'refs/heads/release'
       run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}  
 
-    - name: Publish to PyPI
+    - name: Publish to PyPI for Release Branch
       if: github.ref == 'refs/heads/release'
       env:
         POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
       run: poetry publish --build
+    
+    - name: Build for main Branch   
+      if: github.ref == 'refs/heads/main'
+      run: poetry build
