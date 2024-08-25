@@ -20,7 +20,13 @@ Or using pip:
 pip install molddir
 ```
 
-# Usage
+# Modules
+
+* `decoder`: Contains the `Decoder` class for decoding the codebase.
+* `encoder`: Contains the `Encoder` class for encoding the codebase.
+* `keys`: Contains the `KeyBuilder` class for building keys.
+* `walker`: Contains the `FolderWalker` class for walking through folders.
+
 ## Using the Module
 ### Encoder Class
 
@@ -43,18 +49,41 @@ decoder(encoded_str="@@@@@@@file1@@@@@@@\nprint('Hello, World!')\n=======\n")
 ```
 
 ## Using the CLI Tool
-molddir also provides a command-line interface for easy usage.
+This script `main.py` provides a command-line interface (CLI) for encoding and decoding a codebase. It supports the following functionalities:
+- Encoding a codebase using the `Encoder` class.
+- Decoding an encoded file using the `Decoder` class.
+- Displaying the version of the tool.
 
-### Encoding
-To encode a codebase, run:
+### Usage
+
 ```
-molddir --encode --codebase_path path/to/codebase
+python main.py --encode --codebase_path <path_to_codebase>
+python main.py --decode --encoded_file <path_to_encoded_file> --output_dir <output_directory>
+python main.py -v | --version
 ```
 
-### Decoding
-To decode the encoded data back into files and directories, run:
+### Arguments
+* --encode: Encode the codebase.
+* --decode: Decode the codebase.
+* --codebase_path: Path to the codebase to encode.
+* --encoded_file: Path to the encoded file to decode.
+* --output_dir: Directory to save the decoded codebase.
+* -v, --version: Display the version of the tool.
+
+### Examples
+
+#### Encode a Codebase
 ```
-molddir --decode --encoded_file encoded_data.txt --output_dir output_dir
+python main.py --encode --codebase_path /path/to/codebase
+```
+
+#### Decode an encoded file
+```
+python main.py --decode --encoded_file /path/to/encoded/file --output_dir /path/to/output/dir
+```
+#### Display the version
+```
+python main.py -v
 ```
 
 # Why Use molddir?
@@ -62,6 +91,3 @@ In the era of Large Language Models (LLMs), sending a complete codebase to an LL
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request on GitHub.
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
