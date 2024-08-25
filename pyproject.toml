@@ -5,9 +5,9 @@ description = "molddir simplifies merging directory files into a single file. It
 authors = ["RahulDas-dev <r.das699@gmail.com>"]
 maintainers = ["RahulDas-dev <r.das699@gmail.com>"]
 license = "MIT"
-homepage = "https://github.com/RahulDas-dev/flatten/"
-repository = "https://github.com/RahulDas-dev/flatten/"
-documentation = "https://github.com/RahulDas-dev/flatten/"
+homepage = "https://github.com/RahulDas-dev/molddir/"
+repository = "https://github.com/RahulDas-dev/molddir/"
+documentation = "https://github.com/RahulDas-dev/molddir/"
 keywords = ["llm for coding",
             "code Compression",
             "Directory Falttening"]
