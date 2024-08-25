@@ -53,7 +53,10 @@ def configure_logging(log_level):
     logging.basicConfig(
         level=log_level,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[logging.StreamHandler(sys.stdout), logging.FileHandler("app.log", mode="a")],
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            # logging.FileHandler("app.log", mode="a")
+        ],
     )
 
 
