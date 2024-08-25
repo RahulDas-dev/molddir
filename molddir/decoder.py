@@ -2,6 +2,7 @@ import logging
 import os
 import re
 from copy import copy
+import shutil
 from typing import List, Optional, Tuple
 
 from .keys import KeyBuilder
@@ -32,8 +33,9 @@ class Decoder:
 
     _output_dir: str
     _keybuilder: KeyBuilder
+    _incremental: bool
 
-    def __init__(self, output_dir: str):
+    def __init__(self, output_dir: str, incremental: bool = False):
         """
         Initializes the Decoder with the given output directory.
 
@@ -41,10 +43,11 @@ class Decoder:
         _output_dir (str): The directory where the decoded codebase will be recreated..
         """
         os.makedirs(output_dir, exist_ok=True)
-        if os.listdir(output_dir):
+        if os.listdir(output_dir) and (not incremental):
             raise ValueError(f"Path {output_dir} is not Empty")
         self._output_dir = output_dir
         self._keybuilder = KeyBuilder()
+        self._incremental = incremental
 
     def __call__(self, encoded_file: Optional[str] = None, encoded_str: Optional[str] = None):
         """
@@ -160,6 +163,11 @@ class Decoder:
 
     def _write_file(self, content: str, path: str):
         full_path = os.path.join(self._output_dir, path)
+        if self._incremental:
+            head, tail = os.path.splitext(os.path.basename(path))
+            new_path = path.replace(f"{head}{tail}", f"{head}_bkp{tail}")
+            new_full_path = os.path.join(self._output_dir, new_path)
+            shutil.copyfile(full_path, new_full_path)
         return_status = True
         try:
             with open(full_path, "w", encoding="utf8") as f:

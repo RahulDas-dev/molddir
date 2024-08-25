@@ -1,7 +1,11 @@
+from contextlib import contextmanager
 import logging
 import os
 from copy import deepcopy
 from fnmatch import fnmatch
+import platform
+import re
+import subprocess
 from typing import List, Optional
 
 logger = logging.getLogger(__name__)
@@ -28,10 +32,11 @@ ESCAPE: List[str] = [
 class FolderWalker:
     _codebase_path: str
 
-    def __init__(self, codebase_path: str, escape: Optional[str] = None):
+    def __init__(self, codebase_path: str, escape: Optional[str] = None, incremental: bool = False):
         if not os.path.exists(codebase_path):
             raise FileNotFoundError(f"Path {codebase_path} does not exist")
         self._codebase_path = codebase_path
+        self._incremental = incremental
         escape_ = None if escape is None else escape.split(",")
         self._ignore_list = set(deepcopy(ESCAPE)) if escape_ is None else set(deepcopy(ESCAPE + escape_))
         self._current_paths = []
@@ -53,7 +58,7 @@ class FolderWalker:
             if line and not line.startswith("#"):
                 self._ignore_list.add(line)
 
-    def _populate_paths(self):
+    def _get_all_files(self):
         for root, dirs, files in os.walk(self._codebase_path):
             dirs_t = []
             for item in dirs:
@@ -72,6 +77,49 @@ class FolderWalker:
                     logger.info(f"Ignoring file: {file_path}")
                 else:
                     self._current_paths.append(file_path)
+
+    @contextmanager
+    def _cd_to_codebase(self):
+        previous_path = os.getcwd()
+        os.chdir(self._codebase_path)
+        try:
+            yield
+        finally:
+            os.chdir(previous_path)
+
+    def _get_incremenal_path(self):
+        if not self.is_git_enabled():
+            return
+        cmd = ["git", "diff", "--name-status"]
+        with self._cd_to_codebase():
+            result = subprocess.run(
+                cmd,
+                shell=True if platform.system().lower() == "windows" else False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                encoding="utf-8",
+            )
+            stdout_ = result.stdout.strip() if isinstance(result.stdout, str) else result.stdout
+            stderr_ = result.stderr.strip() if isinstance(result.stderr, str) else result.stderr
+            if stderr_:
+                logger.info("Error While excuting the Git Command")
+                logger.info(stderr_)
+            pattern = re.compile(r"^[A-Z]\s+(.*)$", re.MULTILINE)
+            matchs = pattern.findall(stdout_)
+            for match in matchs:
+                fname = os.path.basename(match.strip())
+                if self._should_ignore(fname):
+                    logger.info(f"Ignoring file: {fname}")
+                else:
+                    filename = os.path.join(self._codebase_path, match.strip())
+                    self._current_paths.append(filename)
+
+    def _populate_paths(self):
+        if self._incremental:
+            self._get_incremenal_path()
+        else:
+            self._get_all_files()
 
     def _should_ignore(self, path: str) -> bool:
         relative_path = os.path.relpath(path, self._codebase_path)
@@ -107,13 +155,3 @@ class FolderWalker:
             return result
         else:
             raise StopIteration
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    # codebase_path_ = "C:/Users/rahul.das05/OneDrive - Infosys Limited/workspace/aiforui/agentnet/"
-    codebase_path_ = "/Users/mac_admin/rahul/agent_net"
-    ignore = FolderWalker(codebase_path_)
-    # print(ignore._ignore_list)
-    for item in ignore:
-        print(item)

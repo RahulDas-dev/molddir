@@ -65,6 +65,7 @@ def main():
     parser.add_argument("--encode", action="store_true", help="Encode the codebase.")
     parser.add_argument("--decode", action="store_true", help="Decode the codebase.")
     parser.add_argument("--codebase_path", type=str, help="Path to the codebase to encode.")
+    parser.add_argument("--incremental", action="store_true", default=False, help="Enable incremental encoding")
     parser.add_argument("--encoded_file", type=str, help="Path to the encoded file to decode.")
     parser.add_argument("--output_dir", type=str, help="Directory to save the decoded codebase.")
     parser.add_argument(
@@ -88,11 +89,11 @@ def main():
         elif args.encode:
             if not args.codebase_path:
                 parser.error("The --codebase_path must be provided for encoder.")
-            _ = Encoder(codebase_path=args.codebase_path)()
+            _ = Encoder(codebase_path=args.codebase_path, incremental=args.incremental)()
         elif args.decode:
             if not args.encoded_file or not args.output_dir:
                 parser.error("Both --encoded_file and --output_dir must be specified for decoder.")
-            Decoder(output_dir=args.output_dir)(encoded_file=args.encoded_file)
+            Decoder(output_dir=args.output_dir, incremental=args.incremental)(encoded_file=args.encoded_file)
         elif not args.encode and not args.decode:
             parser.error("Either --encode or --decode must be specified.")
     except Exception as e:

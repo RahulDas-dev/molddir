@@ -40,6 +40,7 @@ class Encoder:
         encoder_key: Optional[str] = None,
         decoder_key: Optional[str] = None,
         escape: Optional[str] = None,
+        incremental: bool = False,
     ):
         """Initializes the Encoder with the given code base path.
 
@@ -51,7 +52,7 @@ class Encoder:
             raise FileNotFoundError(f"Path {codebase_path} is not exists")
         self._codebase_path = str(codebase_path)
         self._keybuilder = KeyBuilder(encoder_key, decoder_key)
-        self._walker = FolderWalker(codebase_path=self._codebase_path, escape=escape)
+        self._walker = FolderWalker(codebase_path=self._codebase_path, escape=escape, incremental=incremental)
 
     def __call__(self, save_encoding: bool = True) -> Optional[str]:
         """Encodes the file or directory and writes the encoded data to a file.
