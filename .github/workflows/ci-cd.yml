@@ -30,6 +30,10 @@ jobs:
     - name: Build the wheel
       run: poetry build
 
+    - name: Configure PyPI token
+      if: github.ref == 'refs/heads/release'
+      run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}  
+
     - name: Publish to PyPI
       if: github.ref == 'refs/heads/release'
       env:
