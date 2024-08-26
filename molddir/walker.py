@@ -47,7 +47,7 @@ class FolderWalker:
     def _populate_gitignore(self):
         gitignore_path = os.path.join(self._codebase_path, ".gitignore")
         if not os.path.exists(gitignore_path):
-            logger.info(f"Gitignore file not found at {self._codebase_path}")
+            logger.debug(f"Gitignore file not found at {self._codebase_path}")
             return
         lines = []
         with open(gitignore_path, "r") as file:
@@ -64,17 +64,17 @@ class FolderWalker:
             for item in dirs:
                 item_path = os.path.normpath(os.path.join(root, item))
                 if self._should_ignore(item_path):
-                    logger.info(f"Ignoring directory: {item}")
+                    logger.debug(f"Ignoring directory: {item}")
                 else:
                     dirs_t.append(item)
             dirs[:] = dirs_t
             if self._should_ignore(root):
-                logger.info(f"Ignoring file: {root}")
+                logger.debug(f"Ignoring file: {root}")
                 continue
             for item in files:
                 file_path = os.path.normpath(os.path.join(root, item))
                 if self._should_ignore(file_path):
-                    logger.info(f"Ignoring file: {file_path}")
+                    logger.debug(f"Ignoring file: {file_path}")
                 else:
                     self._current_paths.append(file_path)
 
@@ -103,13 +103,13 @@ class FolderWalker:
             stdout_ = result.stdout.strip() if isinstance(result.stdout, str) else result.stdout
             stderr_ = result.stderr.strip() if isinstance(result.stderr, str) else result.stderr
             if stderr_:
-                logger.info("Error While excuting the Git Command")
-                logger.info(stderr_)
+                logger.error("Error While excuting the Git Command")
+                logger.error(stderr_)
             pattern = re.compile(r"^(.*)$", re.MULTILINE)
             for match in pattern.findall(stdout_):
                 filename = os.path.join(self._codebase_path, match.strip())
                 if self._should_ignore(filename):
-                    logger.info(f"Ignoring file: {match.strip()}")
+                    logger.debug(f"Ignoring file: {match.strip()}")
                 else:
                     self._current_paths.append(filename)
 

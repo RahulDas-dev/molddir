@@ -88,7 +88,7 @@ class Encoder:
         """
         encoder_key = self._keybuilder.encoder_key
         relative_path = os.path.relpath(path, self._codebase_path)
-        logger.info(f"+ processing {relative_path} ...")
+        logger.debug(f"+ processing {relative_path} ...")
         relative_path = os.path.basename(path) if relative_path == "." else relative_path
         try:
             content = None

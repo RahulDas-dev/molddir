@@ -26,5 +26,5 @@ def encode_or_decode(encode: bool):
 
 
 if __name__ == "__main__":
-    configure_logging("Info")
+    configure_logging("DEBUG")
     encode_or_decode(encode=True)
