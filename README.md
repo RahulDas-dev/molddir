@@ -66,6 +66,7 @@ python main.py -v | --version
 * --encode: Encode the codebase.
 * --decode: Decode the codebase.
 * --codebase_path: Path to the codebase to encode.
+* --incremental: Enable incremental encoding (default: False)
 * --encoded_file: Path to the encoded file to decode.
 * --output_dir: Directory to save the decoded codebase.
 * -v, --version: Display the version of the tool.
