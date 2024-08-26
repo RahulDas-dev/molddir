@@ -69,12 +69,12 @@ class FolderWalker:
                     dirs_t.append(item)
             dirs[:] = dirs_t
             if self._should_ignore(root):
-                logger.debug(f"Ignoring file: {root}")
+                logger.debug(f"Ignoring directory: {root}")
                 continue
             for item in files:
                 file_path = os.path.normpath(os.path.join(root, item))
                 if self._should_ignore(file_path):
-                    logger.debug(f"Ignoring file: {file_path}")
+                    logger.debug(f"Ignoring file: {item}")
                 else:
                     self._current_paths.append(file_path)
 
