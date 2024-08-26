@@ -38,3 +38,21 @@ jobs:
     - name: Build for main Branch   
       if: github.ref == 'refs/heads/main'
       run: poetry build
+    
+    - name: Create GitHub Release
+      if: github.ref == 'refs/heads/release'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ steps.get_version.outputs.VERSION }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Artifact
+      if: github.ref == 'refs/heads/release'
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-package
+        path: dist/*
