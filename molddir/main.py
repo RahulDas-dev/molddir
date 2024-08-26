@@ -41,23 +41,13 @@ Logging:
 """
 
 import argparse
-import logging
 import importlib.metadata
 import sys
+import logging
 
 from .decoder import Decoder
 from .encoder import Encoder
-
-
-def configure_logging(log_level):
-    logging.basicConfig(
-        level=log_level,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.StreamHandler(sys.stdout),
-            # logging.FileHandler("app.log", mode="a")
-        ],
-    )
+from .utility import configure_logging
 
 
 def main():

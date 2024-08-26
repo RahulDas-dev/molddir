@@ -47,7 +47,7 @@ class FolderWalker:
     def _populate_gitignore(self):
         gitignore_path = os.path.join(self._codebase_path, ".gitignore")
         if not os.path.exists(gitignore_path):
-            logger.info(f"Gitignore file not found at {self._codebase_path}")
+            logger.debug(f"Gitignore file not found at {self._codebase_path}")
             return
         lines = []
         with open(gitignore_path, "r") as file:
@@ -64,17 +64,17 @@ class FolderWalker:
             for item in dirs:
                 item_path = os.path.normpath(os.path.join(root, item))
                 if self._should_ignore(item_path):
-                    logger.info(f"Ignoring directory: {item}")
+                    logger.debug(f"Ignoring directory: {item}")
                 else:
                     dirs_t.append(item)
             dirs[:] = dirs_t
             if self._should_ignore(root):
-                logger.info(f"Ignoring file: {root}")
+                logger.debug(f"Ignoring file: {root}")
                 continue
             for item in files:
                 file_path = os.path.normpath(os.path.join(root, item))
                 if self._should_ignore(file_path):
-                    logger.info(f"Ignoring file: {file_path}")
+                    logger.debug(f"Ignoring file: {file_path}")
                 else:
                     self._current_paths.append(file_path)
 
@@ -90,7 +90,7 @@ class FolderWalker:
     def _get_incremenal_path(self):
         if not self.is_git_enabled():
             return
-        cmd = ["git", "diff", "--name-status"]
+        cmd = ["git", "diff", "--name-only", "HEAD"]
         with self._cd_to_codebase():
             result = subprocess.run(
                 cmd,
@@ -103,16 +103,14 @@ class FolderWalker:
             stdout_ = result.stdout.strip() if isinstance(result.stdout, str) else result.stdout
             stderr_ = result.stderr.strip() if isinstance(result.stderr, str) else result.stderr
             if stderr_:
-                logger.info("Error While excuting the Git Command")
-                logger.info(stderr_)
-            pattern = re.compile(r"^[A-Z]\s+(.*)$", re.MULTILINE)
-            matchs = pattern.findall(stdout_)
-            for match in matchs:
-                fname = os.path.basename(match.strip())
-                if self._should_ignore(fname):
-                    logger.info(f"Ignoring file: {fname}")
+                logger.error("Error While excuting the Git Command")
+                logger.error(stderr_)
+            pattern = re.compile(r"^(.*)$", re.MULTILINE)
+            for match in pattern.findall(stdout_):
+                filename = os.path.join(self._codebase_path, match.strip())
+                if self._should_ignore(filename):
+                    logger.debug(f"Ignoring file: {match.strip()}")
                 else:
-                    filename = os.path.join(self._codebase_path, match.strip())
                     self._current_paths.append(filename)
 
     def _populate_paths(self):
