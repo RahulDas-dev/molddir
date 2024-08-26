@@ -1,8 +1,4 @@
-import logging
-
-from molddir import Decoder, Encoder
-
-logging.basicConfig(level=logging.INFO)
+from molddir import Decoder, Encoder, configure_logging
 
 
 # Create the release Branch:
@@ -30,4 +26,5 @@ def encode_or_decode(encode: bool):
 
 
 if __name__ == "__main__":
+    configure_logging("Info")
     encode_or_decode(encode=True)

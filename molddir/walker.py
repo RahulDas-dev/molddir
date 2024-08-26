@@ -90,7 +90,7 @@ class FolderWalker:
     def _get_incremenal_path(self):
         if not self.is_git_enabled():
             return
-        cmd = ["git", "diff", "--name-status"]
+        cmd = ["git", "diff", "--name-only", "HEAD"]
         with self._cd_to_codebase():
             result = subprocess.run(
                 cmd,
@@ -105,14 +105,12 @@ class FolderWalker:
             if stderr_:
                 logger.info("Error While excuting the Git Command")
                 logger.info(stderr_)
-            pattern = re.compile(r"^[A-Z]\s+(.*)$", re.MULTILINE)
-            matchs = pattern.findall(stdout_)
-            for match in matchs:
-                fname = os.path.basename(match.strip())
-                if self._should_ignore(fname):
-                    logger.info(f"Ignoring file: {fname}")
+            pattern = re.compile(r"^(.*)$", re.MULTILINE)
+            for match in pattern.findall(stdout_):
+                filename = os.path.join(self._codebase_path, match.strip())
+                if self._should_ignore(filename):
+                    logger.info(f"Ignoring file: {match.strip()}")
                 else:
-                    filename = os.path.join(self._codebase_path, match.strip())
                     self._current_paths.append(filename)
 
     def _populate_paths(self):
